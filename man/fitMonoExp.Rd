@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitMonoExp.R
 \name{fitMonoExp}
 \alias{fitMonoExp}
-\title{Monoexponential decay fit}
+\title{Monoexponential fit of OCT decay}
 \usage{
 fitMonoExp(x, y, uy, method = "optim", nb_chains = 4,
   nb_warmup = 500, nb_iter = nb_warmup + 500)
@@ -12,26 +12,27 @@ fitMonoExp(x, y, uy, method = "optim", nb_chains = 4,
 
 \item{y}{a numeric vector of responses}
 
-\item{uy}{a numeric vector of uncertainty on y}
+\item{uy}{a numeric vector of uncertainty on 'y'}
 
 \item{method}{choice of optimization method in c('optim','sample')}
 }
 \value{
-A list
+A list containing
+\describe{
+  \item{best.theta}{a vector of optimal parameters}
+  \item{cor.theta}{correlation matrix of optimal parameters}
+  \item{method}{choice of optimization method}
+  \item{fit}{a \code{stanfit} object containg the results of the fit}
+}
 }
 \description{
-Monoexponential decay fit
+Monoexponential fit of OCT decay
 }
 \details{
-Function which proceeds in two steps:
-
-(1) get a set of residuals R using a smoothing splines model
-
-(2) estimate the x-dependent standard deviation of the residuals
-
-by bayesian inference: R(x) ~ normal(0,uy(x));
-
-uy(x) = theta[1]*exp(-x/theta[2]) assuming a Poisson-type noise.
+Bayesian inference of the parameters of an exponential
+model assuming an uncorrelated normal noise
+\code{y(x) ~ normal(m(x),uy(x));
+m(x) = theta[1] + theta[2]*exp(-x/theta[3])}.
 }
 \author{
 Pascal PERNOT

@@ -11,24 +11,28 @@ estimateNoise(x, y, df = 15)
 
 \item{y}{a numeric vector of responses}
 
-\item{df}{smoothing factor for `smooth.splines`}
+\item{df}{smoothing factor for \code{smooth.splines}}
 }
 \value{
-A list
+A list containing
+\describe{
+  \item{theta}{a vector of optimal parameters for
+               the exponential noise model}
+  \item{uy}{a vector of estimated uncertainty values for \code{y}}
+  \item{ySmooth}{ a vector of values for the smoother curve}
+}
 }
 \description{
 Estimate and model noise in signal
 }
 \details{
 Function which proceeds in two steps:
-
-(1) get a set of residuals R using a smoothing splines model
-
-(2) estimate the x-dependent standard deviation of the residuals
-
-by bayesian inference: R(x) ~ normal(0,uy(x));
-
-uy(x) = theta[1]*exp(-x/theta[2]) assuming a Poisson-type noise.
+\enumerate{
+  \item get a set of residuals R using a smoothing splines model
+  \item estimate the x-dependent standard deviation of the residuals
+}
+by bayesian inference: \code{R(x) ~ normal(0,uy(x));
+uy(x) = theta[1]*exp(-x/theta[2])} assuming a Poisson-type noise.
 }
 \author{
 Pascal PERNOT

@@ -1,16 +1,21 @@
 #  fitMonoExp.R
-#' Monoexponential decay fit
+#' Monoexponential fit of OCT decay
 #' @param x a numeric vector
 #' @param y a numeric vector of responses
-#' @param uy a numeric vector of uncertainty on y
+#' @param uy a numeric vector of uncertainty on 'y'
 #' @param method choice of optimization method in c('optim','sample')
-#' @return A list
+#' @return A list containing
+#' \describe{
+#'   \item{best.theta}{a vector of optimal parameters}
+#'   \item{cor.theta}{correlation matrix of optimal parameters}
+#'   \item{method}{choice of optimization method}
+#'   \item{fit}{a \code{stanfit} object containg the results of the fit}
+#' }
 #' @author Pascal PERNOT
-#' @details Function which proceeds in two steps:
-#' @details (1) get a set of residuals R using a smoothing splines model
-#' @details (2) estimate the x-dependent standard deviation of the residuals
-#' @details by bayesian inference: R(x) ~ normal(0,uy(x));
-#' @details uy(x) = theta[1]*exp(-x/theta[2]) assuming a Poisson-type noise.
+#' @details Bayesian inference of the parameters of an exponential
+#' model assuming an uncorrelated normal noise
+#' \code{y(x) ~ normal(m(x),uy(x));
+#' m(x) = theta[1] + theta[2]*exp(-x/theta[3])}.
 #' @export
 
 fitMonoExp <- function(x, y, uy, method = 'optim',

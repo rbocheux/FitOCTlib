@@ -2,3 +2,7 @@
 .Rhistory
 *.Rproj
 Read-and-delete-me
+src/stan_files/*.o
+src/stan_files/*.cc
+src/stan_files/*.hpp
+man/*.Rd

@@ -1,12 +1,35 @@
 #  fitExpGP.R
-#' Decay fit with modulation of mean depth
+#' Decay fit with modulation of mean depth by Gaussian Process
 #' @param x a numeric vector
 #' @param y a numeric vector of responses
-#' @param uy a numeric vector of uncertainty on y
+#' @param uy a numeric vector of uncertainty on 'y'
 #' @param method choice of optimization method in c('optim','sample')
-#' @return A list
+#' @param Nn number of control points
+#' @param theta0    theta prior mean vbalues
+#' @param cor_theta theta prior correlation matrix
+#' @param ru_theta  theta prior uncertainty scale
+#' @param lambda_rate scale of ctrl points prior
+#' @param lasso flag to use lasso prior
+#' @param iter max. number of iterations for 'optim'
+#' @param prior_PD  flag to sample from prior pdf only
+#' @param nb_chains  number of MCMC chains
+#' @param nb_warmup number of warmup steps
+#' @param nb_iter   number of steps
+#' @return A list containing
+#' \describe{
+#'   \item{fit}{a \code{stanfit} object containg the results of the fit}
+#'   \item{xGP}{a vector of coordinates for the control points}
+#'   \item{method}{same as input}
+#'   \item{prior_PD}{same as input}
+#'   \item{lasso}{same as input}
+#' }
 #' @author Pascal PERNOT
-#' @details Function which proceeds in two steps:
+#' @details Bayesian inference of the parameters of an exponential
+#' model with modulation assuming an uncorrelated normal noise
+#' \code{y(x) ~ normal(m(x),uy(x));
+#' m(x) = theta[1] + theta[2]*exp(-x/theta[3]*(1+l(x)));}. 
+#' \code{l(x)} is defined by a GP with fixed positions 'xGP', 
+#' variance and correlation length.
 #' @export
 
 fitExpGP <- function(x, y, uy,

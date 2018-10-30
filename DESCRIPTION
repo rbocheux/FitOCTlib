@@ -1,12 +1,12 @@
 Package: FitOCTLib
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Stan-based functions to fit OCT signal
+Version: 0.1
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Pascal ",
+           family = "PERNOT",
            role = c("aut", "cre"),
-           email = "first.last@example.com")
-Description: What the package does (one paragraph).
+           email = "pascal.pernot@u-psud.fr")
+Description: Stan-based functions to fit OCT signal.
 License: GPL (>=3)
 Depends: 
     methods,
