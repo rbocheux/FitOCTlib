@@ -1,5 +1,5 @@
 Package: FitOCTLib
-Title: Stan-based functions to fit OCT signal
+Title: Stan-based functions to fit OCT signals
 Version: 0.1
 Authors@R: 
     person(given = "Pascal ",
