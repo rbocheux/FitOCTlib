@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/155345091.svg)](https://zenodo.org/badge/latestdoi/155345091)
+
 # FitOCTlib
 Stan-based library for OCT signals analysis
 
