@@ -7,4 +7,3 @@ src/stan_files/*.cc
 src/stan_files/*.hpp
 src/init.o
 src/FitOCTlib.so
-man/*.Rd
