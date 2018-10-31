@@ -6,8 +6,10 @@
 \usage{
 fitExpGP(x, y, uy, Nn = 10, theta0 = NULL, cor_theta = NULL,
   ru_theta = 0.1, lambda_rate = 0.1, lasso = FALSE,
-  method = "sample", iter = 50000, prior_PD = 0, nb_chains = 4,
-  nb_warmup = 500, nb_iter = 1000)
+  method = "sample", iter = 50000, prior_PD = 0, alpha_scale = 0.1,
+  rho_scale = 1/Nn, gridType = "internal", nb_chains = 4,
+  nb_warmup = 500, nb_iter = 1000, verbose = FALSE,
+  open_progress = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector}
@@ -34,6 +36,12 @@ fitExpGP(x, y, uy, Nn = 10, theta0 = NULL, cor_theta = NULL,
 
 \item{prior_PD}{flag to sample from prior pdf only}
 
+\item{alpha_scale}{SD scale of GP}
+
+\item{rho_scale}{relative correlation length of GP}
+
+\item{gridType}{type of controle points grid (`internal` does not contain boundaries)}
+
 \item{nb_chains}{number of MCMC chains}
 
 \item{nb_warmup}{number of warmup steps}
@@ -57,8 +65,8 @@ Decay fit with modulation of mean depth by Gaussian Process
 Bayesian inference of the parameters of an exponential
 model with modulation assuming an uncorrelated normal noise
 \code{y(x) ~ normal(m(x),uy(x));
-m(x) = theta[1] + theta[2]*exp(-x/theta[3]*(1+l(x)));}. 
-\code{l(x)} is defined by a GP with fixed positions 'xGP', 
+m(x) = theta[1] + theta[2]*exp(-x/theta[3]*(1+l(x)));}.
+\code{l(x)} is defined by a GP with fixed positions 'xGP',
 variance and correlation length.
 }
 \author{
