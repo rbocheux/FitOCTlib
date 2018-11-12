@@ -50,7 +50,7 @@ functions{
     int N = size(x);
     vector[N] m;
     for (n in 1:N)
-      m[n] = p[1] + p[2] * exp(-x[n]/(p[3]*(1+dL[n])));
+      m[n] = p[1] + p[2] * exp(-2*x[n]/(p[3]*(1+dL[n])));
     return m;
   }
 

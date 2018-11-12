@@ -3,7 +3,7 @@ functions{
   // x1   : positions of control points
   // y1   : values of control points
   // alpha: dispersion param of GP
-  // rho  : correlatio factor of GP
+  // rho  : correlation factor of GP
   // delta: nugget
   vector gp_pred(real[] x2,
                  vector y1,
@@ -51,7 +51,7 @@ functions{
     int N = size(x);
     vector[N] m;
     for (n in 1:N)
-      m[n] = p[1] + p[2] * exp(-x[n]/(p[3]*(1+dL[n])));
+      m[n] = p[1] + p[2] * exp(-2*x[n]/(p[3]*(1+dL[n])));
     return m;
   }
 
