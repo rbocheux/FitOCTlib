@@ -30,7 +30,7 @@
 #' @details Bayesian inference of the parameters of an exponential
 #' model with modulation assuming an uncorrelated normal noise
 #' \code{y(x) ~ normal(m(x),uy(x));
-#' m(x) = theta[1] + theta[2]*exp(-x/theta[3]*(1+l(x)));}.
+#' m(x) = theta[1] + theta[2]*exp(-2*x/theta[3]*(1+l(x)));}.
 #' \code{l(x)} is defined by a GP with fixed positions 'xGP',
 #' variance and correlation length.
 #' @export

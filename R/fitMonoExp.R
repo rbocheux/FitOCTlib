@@ -15,7 +15,7 @@
 #' @details Bayesian inference of the parameters of an exponential
 #' model assuming an uncorrelated normal noise
 #' \code{y(x) ~ normal(m(x),uy(x));
-#' m(x) = theta[1] + theta[2]*exp(-x/theta[3])}.
+#' m(x) = theta[1] + theta[2]*exp(-2*x/theta[3])}.
 #' @export
 
 fitMonoExp <- function(x, y, uy, method = 'optim',
