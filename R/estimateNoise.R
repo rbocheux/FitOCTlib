@@ -5,8 +5,9 @@
 #' @param df smoothing factor for \code{smooth.splines}
 #' @return A list containing
 #' \describe{
-#'   \item{theta}{a vector of optimal parameters for
-#'                the exponential noise model}
+#'   \item{fit}{a \code{stanfit} object containg the results of the fit}
+#'   \item{method}{choice of optimization method}
+#'   \item{theta}{a vector of optimal parameters}
 #'   \item{uy}{a vector of estimated uncertainty values for \code{y}}
 #'   \item{ySmooth}{ a vector of values for the smoother curve}
 #' }
@@ -32,15 +33,19 @@ estimateNoise <- function(x, y, df = 15) {
   init = list(theta = c(max(resSpl),mean(x)))
 
   # Optimize
-  fit = rstan::optimizing(stanmodels$modHetero,
-                          data = stanData,
-                          init = init,
-                          as_vector = FALSE,
-                          verbose   = FALSE)
-
+  fit = rstan::optimizing(
+    stanmodels$modHetero,
+    data = stanData,
+    init = init,
+    as_vector = FALSE,
+    verbose   = FALSE,
+    hessian   = TRUE
+  )
+  
   # Estimate data uncertainty
   theta = fit$par$theta
   sig = theta[1]*exp(-x/theta[2])
 
-  return(list(fit = fit, theta = theta, uy = sig, ySmooth = ySpl))
+  return(list(fit = fit, theta = theta, uy = sig, 
+              ySmooth = ySpl, method='optim'))
 }
