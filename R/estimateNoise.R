@@ -42,5 +42,5 @@ estimateNoise <- function(x, y, df = 15) {
   theta = fit$par$theta
   sig = theta[1]*exp(-x/theta[2])
 
-  return(list(theta = theta, uy = sig, ySmooth = ySpl))
+  return(list(fit = fit, theta = theta, uy = sig, ySmooth = ySpl))
 }
