@@ -105,42 +105,48 @@ fitExpGP <- function(x, y, uy,
   # Run Stan
   if(method == 'sample') {
 
-    fit = sampling(stanmodels$modFitExpGP,
-                   data = stanData,
-                   pars = pars,
-                   init = function() {init},
-                   control = list(adapt_delta=0.99,max_treedepth=12),
-                   iter = nb_iter,
-                   chains = nb_chains,
-                   warmup = nb_warmup,
-                   verbose = verbose,
-                   open_progress = open_progress)
+    fit = rstan::sampling(
+      stanmodels$modFitExpGP,
+      data = stanData,
+      pars = pars,
+      init = function() {init},
+      control = list(adapt_delta=0.99,max_treedepth=12),
+      iter = nb_iter,
+      chains = nb_chains,
+      warmup = nb_warmup,
+      verbose = verbose,
+      open_progress = open_progress
+    )
 
   } else {
 
-    fit = optimizing(stanmodels$modFitExpGP,
-                     data = stanData,
-                     init = init,
-                     as_vector = FALSE,
-                     algorithm = 'LBFGS',
-                     hessian = TRUE,
-                     draws = 500,
-                     iter = iter,
-                     refresh = 500,
-                     verbose = verbose)
-
+    fit = rstan::optimizing(
+      stanmodels$modFitExpGP,
+      data = stanData,
+      init = init,
+      as_vector = FALSE,
+      algorithm = 'LBFGS',
+      hessian = TRUE,
+      draws = nb_iter,
+      iter = iter,
+      refresh = 500,
+      verbose = verbose
+    )
+    
     if(is.null(fit$theta_tilde))
       # No Hessian-based sampling done => try once to refine solution
-      fit = optimizing(stanmodels$modFitExpGP,
-                       data = stanData,
-                       init = fit$par, # Restart
-                       as_vector = FALSE,
-                       algorithm = 'LBFGS',
-                       hessian = TRUE,
-                       draws = 500,
-                       iter = iter,
-                       refresh = 500,
-                       verbose = verbose)
+      fit = rstan::optimizing(
+        stanmodels$modFitExpGP,
+        data = stanData,
+        init = fit$par, # Restart
+        as_vector = FALSE,
+        algorithm = 'LBFGS',
+        hessian = TRUE,
+        draws = nb_iter,
+        iter = iter,
+        refresh = 500,
+        verbose = verbose
+      )
   }
 
   return(list(fit = fit, method = method, xGP = xGP,

@@ -32,12 +32,12 @@ plotPriPostAll   <- function(pri, pos, gPars) {
   
   for(i in 1:ncol(theta_pri))
     plotPriPost(theta_pri[,i],theta_pos[,i],paste0('theta_',i),
-               gPars=gPars)
+                gPars=gPars)
   plotPriPost(lambda_pri,lambda_pos,'lambda',
-             gPars=gPars)
+              gPars=gPars)
   plotPriPost(sigma_pri,sigma_pos,'sigma',
-             gPars=gPars)
+              gPars=gPars)
   for(i in 1:ncol(yGP_pri))
     plotPriPost(yGP_pri[,i],yGP_pos[,i],paste0('yGP_',i),0.5*c(-1,1),
-               gPars=gPars)
+                gPars=gPars)
 }

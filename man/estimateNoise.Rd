@@ -16,8 +16,9 @@ estimateNoise(x, y, df = 15)
 \value{
 A list containing
 \describe{
-  \item{theta}{a vector of optimal parameters for
-               the exponential noise model}
+  \item{fit}{a \code{stanfit} object containg the results of the fit}
+  \item{method}{choice of optimization method}
+  \item{theta}{a vector of optimal parameters}
   \item{uy}{a vector of estimated uncertainty values for \code{y}}
   \item{ySmooth}{ a vector of values for the smoother curve}
 }

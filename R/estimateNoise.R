@@ -24,7 +24,7 @@
 estimateNoise <- function(x, y, df = 15) {
 
   # Smoothing
-  ySpl   = smooth.spline(x,y,df=df)$y
+  ySpl   = stats::smooth.spline(x,y,df=df)$y
   resSpl = y-ySpl
 
   # Fit smoothing residuals by exponential variance model

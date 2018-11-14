@@ -36,28 +36,34 @@ fitMonoExp <- function(x, y, uy, method = 'optim',
     parOpt = c('theta')
     pars   = c(parOpt,'resid','m','br')
 
-    fit = sampling(stanmodels$modFitExp,
-                   data = stanData,
-                   pars = pars,
-                   init = init,
-                   control = list(adapt_delta=0.99, max_treedepth=12),
-                   iter = nb_iter, chains = nb_chains,
-                   warmup = nb_warmup, verbose=FALSE)
-
+    fit = rstan::sampling(
+      stanmodels$modFitExp,
+      data = stanData,
+      pars = pars,
+      init = init,
+      control = list(adapt_delta=0.99, max_treedepth=12),
+      iter = nb_iter, 
+      chains = nb_chains,
+      warmup = nb_warmup, 
+      verbose=FALSE
+    )
+    
     # Estimate decay params
-    theta   = extract(fit,'theta')[[1]]
+    theta   = rstan::extract(fit,'theta')[[1]]
     theta0  = colMeans(theta)
     thetaCor= cor(theta)
 
   } else {
 
-    fit = optimizing(stanmodels$modFitExp,
-                     data = stanData,
-                     init = init,
-                     as_vector = FALSE,
-                     verbose   = FALSE,
-                     hessian   = TRUE )
-
+    fit = rstan::optimizing(
+      stanmodels$modFitExp,
+      data = stanData,
+      init = init,
+      as_vector = FALSE,
+      verbose   = FALSE,
+      hessian   = TRUE 
+    )
+    
     # Estimate decay params
     theta0  = fit$par$theta
     thetaCor= cov2cor(solve(-fit$hessian))
