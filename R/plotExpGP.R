@@ -1,0 +1,244 @@
+#  plotExpGP.R
+#' Plot outputs from \code{fitExpGP}.
+#' @param x a numeric vector
+#' @param y a numeric vector of responses/data
+#' @param uy a numeric vector of uncertainties
+#' @param ySmooth a numeric vector of smoothed data
+#' @param out a list, output of fitEpxGP
+#' @param modScale a real defining the plotting scale for yGP
+#' @param nMC an integer number of spaghetti lines
+#' @param gPars a list of graphical parameters and colors
+#' @return Produces a plot.
+#' @author Pascal PERNOT
+#' @export
+
+plotExpGP       <- function(x, y, uy, ySmooth, out,
+                            modScale=0.3, nMC=100, gPars) {
+  # Extract graphical parameters
+  for (n in names(gPars))
+    assign(n,rlist::list.extract(gPars,n))
+  
+  fit      = out$fit
+  method   = out$method
+  xGP      = out$xGP
+  prior_PD = out$prior_PD
+  # lasso    = out$lasso
+  
+  par(mfrow=c(2-prior_PD,2),pty=pty,mar=mar,mgp=mgp,
+      tcl=tcl,lwd=lwd, cex=cex)
+  
+  if(method == 'sample') {
+    
+    theta   = rstan::extract(fit,'theta')[[1]]
+    yGP     = rstan::extract(fit,'yGP')[[1]]
+    sigma   = mean(rstan::extract(fit,'sigma')[[1]])
+    if(prior_PD == 0) {
+      resid   = rstan::extract(fit,'resid')[[1]]
+      mod     = rstan::extract(fit,'m')[[1]]
+      dL      = rstan::extract(fit,'dL')[[1]]
+      lp      = rstan::extract(fit,'lp__')[[1]]
+      map     = which.max(lp)
+      y_map   = mod[map,]
+    }
+    
+    iMC = sample.int(nrow(theta),nMC)
+    
+    # Fit
+    plot(x,y,pch=20,cex=0.5,col=cols[6],
+         main='Data fit',
+         xlab='depth (a.u.)',
+         ylab='mean OCT signal (a.u.)')
+    grid()
+    if(prior_PD == 0) {
+      if(nMC >0) {
+        for (i in 1:nMC)
+          lines(x, mod[iMC[i],], col=col_tr[4])
+      }
+      # Calculate AVerage Exponential Decay
+      mExp = x*0
+      for (i in 1:nrow(theta))
+        mExp = mExp + expDecayModel(x,theta[i,1:3])
+      mExp = mExp/nrow(theta)
+      lines(x,mExp,col=cols[7])
+    } else {
+      if(nMC >0)
+        for (i in 1:nMC)
+          lines(x,expDecayModel(x,theta[i,1:3]),col=col_tr[7])
+    }
+    
+    legend('topright', bty='n',
+           legend=c('data','mean exp. fit','post. sample'),
+           pch=c(20,NA,NA),lty=c(-1,1,1),
+           col=c(cols[6],cols[7], col_tr2[4])
+    )
+    box()
+    
+    if(prior_PD == 0) {
+      # Residuals
+      res = colMeans(resid)
+      ylim=1.2*max(abs(res))*c(-1,1)
+      plot(x,res,type='n',
+           ylim=ylim, main='Residuals',
+           xlab='depth (a.u.)',
+           ylab='residuals (a.u.)')
+      grid(lwd=3); abline(h=0)
+      polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
+      points(x,res,pch=20,cex=0.75,col=cols[6])
+      lines(x, ySmooth-y_map, col=cols[7])
+      legend('topright', bty='n',
+             legend=c('mean resid.','data 95% uncert.','smooth - fit'),
+             pch=c(20,NA,NA),lty=c(-1,1,1),lwd=c(1,6,1),
+             col=c(cols[6],col_tr2[4],cols[7])
+      )
+      box()
+    }
+    
+    # Local deviations
+    if(prior_PD == 0) {
+      plot(x, dL[map,], type = 'n',
+           ylim = modScale * c(-1,1),
+           col  = cols[4],
+           main='Deviation from mean depth',
+           xlab = 'depth (a.u.)',
+           ylab = 'relative deviation')
+      abline(h=0)
+      grid()
+      if(nMC >0)
+        for (i in 1:nMC)
+          lines(x, dL[iMC[i],], col=col_tr[4])
+      
+    } else {
+      plot(x, x, type = 'n',
+           ylim = modScale*c(-1,1),
+           col  = cols[4],
+           main='Deviation from mean depth',
+           xlab = 'depth (a.u.)',
+           ylab = 'relative deviation')
+      abline(h=0)
+      grid()
+    }
+    
+    Q = t(apply(yGP,2,
+                function(x)
+                  quantile(x,probs = c(0.025,0.25,0.75,0.975))
+    )
+    )
+    segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])       # 95 %
+    segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=6) # 50 %
+    
+    legend('topright', bty='n',
+           legend=c('50% CI','95% CI','post. sample'),
+           pch=NA ,lty=c(1,1,1),lwd=c(6,2,2),
+           col=c(cols[6],cols[7],col_tr2[4])
+    )
+    box()
+    
+  } else {
+    
+    theta = fit$par$theta
+    mod   = fit$par$m
+    resid = fit$par$resid
+    dL    = fit$par$dL
+    yGP   = fit$par$yGP
+    sigma = fit$par$sigma
+    
+    plot(x,y,pch=20,cex=0.5,col=cols[6],
+         main='Data fit',
+         xlab='depth (a.u.)',
+         ylab='mean OCT signal (a.u.)')
+    grid()
+    lines(x,expDecayModel(x,theta),col=cols[7])
+    lines(x,mod, col=cols[4])
+    
+    legend('topright', bty='n',
+           legend=c('data','expo. best fit','best fit'),
+           pch=c(20,NA,NA),lty=c(-1,1,1),
+           col=c(cols[6],cols[7], col_tr2[4])
+    )
+    box()
+    
+    # Residus
+    ylim=1.2*max(abs(resid))*c(-1,1)
+    res = resid
+    plot(x,res,type='n',
+         ylim=ylim, main='Residuals',
+         xlab='depth (a.u.)',
+         ylab='residuals (a.u.)')
+    grid()
+    abline(h=0)
+    polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
+    points(x,res,pch=20,cex=0.75,col=cols[6])
+    lines(x, ySmooth - mod, col=cols[7])
+    legend('topright', bty='n',
+           legend=c('mean resid.','data 95% uncert.','smooth - fit'),
+           pch=c(20,NA,NA),lty=c(-1,1,1),lwd=c(1,6,1),
+           col=c(cols[6],col_tr2[4],cols[7])
+    )
+    box()
+    
+    # Local deviations
+    plot(x, dL, type = 'l',
+         ylim = modScale*c(-1,1),
+         col  = cols[4],
+         main = 'Deviation from mean depth',
+         xlab = 'depth (a.u.)',
+         ylab = 'relative deviation')
+    grid()
+    abline(h=0)
+    
+    if(!is.null(fit$theta_tilde)) {
+      S = fit$theta_tilde
+      iMC = sample.int(nrow(S),nMC)
+      
+      c = which(grepl(pattern = 'dL\\[', x=colnames(S)))
+      for (i in 1:nMC)
+        lines(x, S[iMC[i],c], col=col_tr[4])
+      
+      c = which(grepl(pattern = 'yGP\\[', x=colnames(S)))
+      yGP = S[iMC,c]
+      Q = t(apply(yGP,2,
+                  function(x)
+                    quantile(x,probs = c(0.025,0.25,0.75,0.975))
+      )
+      )
+      segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])       # 95 %
+      segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=6) # 50 %
+      legend('topright', bty='n',
+             legend=c('50% CI','95% CI','post. sample'),
+             pch=NA ,lty=c(1,1,1),lwd=c(6,2,2),
+             col=c(cols[6],cols[7],col_tr2[4])
+      )
+      
+    } else {
+      points(xGP,yGP,pch=19,col=cols[7])
+      segments(xGP,yGP,xGP,0*yGP,col=cols[7])
+      legend('topright', bty='n',
+             legend=c('ctrl points','modulation'),
+             pch=c(19,NA) ,lty=c(1,1),lwd=c(-1,2),
+             col=c(cols[7],cols[4])
+      )
+    }
+    box()
+  }
+  
+  # if(prior_PD == 0) {
+  #   # Plot true modulation for synthetic signals
+  #   fName = paste0('./Modulation.csv')
+  #   if(file.exists(fName)) {
+  #     M = read.csv(fName)
+  #     lines(M[,1],M[,2],lty=2)
+  #   }
+  # }
+  
+  if(prior_PD == 0) {
+    # QQ-plot of weighted residuals
+    resw = res/(uy*sigma)
+    xlim = range(resw)
+    qqnorm(resw, xlim=xlim,ylim=xlim,
+           main='Norm. Q-Q plot of wghtd resid.',
+           col=cols[6], pch=20)
+    abline(a=0,b=1,lty=2)
+    grid();box()
+  }
+  
+}
