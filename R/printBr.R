@@ -3,8 +3,15 @@
 
 #' @param fit an object (list or stanfit) issued from a stan code
 #' @param prob a probability threshold
+#' @param silent a logical controling standard output
 
-#' @return No return value. 
+#' @return Returns invisibly a list containing
+#' \describe{
+#'   \item{br   }{the estimated value of the Birge's ratio} 
+#'   \item{ndf  }{the estimated number of degrees of freedom} 
+#'   \item{CI95 }{a 95% interval for admissible values of br}
+#'   \item{alert}{a possible warning message, or NULL}
+#' }
 
 #' @author Pascal PERNOT
 
@@ -17,7 +24,7 @@
 
 #' @export
 
-printBr         <- function(fit, prob=0.90) {
+printBr         <- function(fit, prob=0.90, silent = FALSE) {
   # Extract relevant infos from fit object
   
   ## Method and model
@@ -75,24 +82,40 @@ printBr         <- function(fit, prob=0.90) {
   # Confidence interval on br
   CI95 = c(qchisq(0.025,df=ndf),qchisq(0.975,df=ndf)) / ndf
   
-  if(!is.null(nAct))
-    cat('Active pts.:',Nn,'/',Nn0,'\n')
-  cat('ndf        :',ndf,'\n')
-  cat('br         :',signif(br,2),'\n')
-  cat('CI95(br)   :',paste0(signif(CI95,2),collapse='-'),'\n')
+  alert = NULL
+  if(!silent) {
+    if(!is.null(nAct))
+      cat('Active pts.:',Nn,'/',Nn0,'\n')
+    cat('ndf        :',ndf,'\n')
+    cat('br         :',signif(br,2),'\n')
+    cat('CI95(br)   :',paste0(signif(CI95,2),collapse='-'),'\n')
+  }
   if(prod(CI95-br) >= 0)
-    cat('!!! WARNING: br out of interval !!! \n')
+    alert = '!!! WARNING: br out of interval !!!'
   
   if(model == 'modFitExpGP' & is.null(nAct)) {
     # Let the user decide by himself
     for(n in rev(0:Nn0)) {
-      ndf = N - (Np + n)
-      CI95 = c(qchisq(0.025,df=ndf),qchisq(0.975,df=ndf)) / ndf
-      br1  = br * ndf0 / ndf
-      if(prod(CI95-br1) < 0)
+      ndf1 = N - (Np + n)
+      CI951 = c(qchisq(0.025,df=ndf1),qchisq(0.975,df=ndf1)) / ndf1
+      br1  = br * ndf0 / ndf1
+      if(prod(CI951-br1) < 0)
         break
     }
-    cat('--> OK if there are less than \n',
-        n+1,' active ctrl points\n')
+    alert = paste0(alert,'\n',
+                   '--> OK if there are less than\n',
+                   n+1,' active ctrl points')
   }
+
+  if(!silent)
+    cat(alert,'\n')
+  
+  invisible(
+    list(
+      br    = br,
+      nsf   = ndf,
+      CI95  = CI95,
+      alert = alert
+    )
+  )
 }

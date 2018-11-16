@@ -4,15 +4,14 @@
 \alias{printBr}
 \title{Print Birges's ratio and confidence interval.}
 \usage{
-printBr(fit, prob = 0.9)
+printBr(fit, prob = 0.9, silent = FALSE)
 }
 \arguments{
 \item{fit}{an object (list or stanfit) issued from a stan code}
 
 \item{prob}{a probability threshold}
-}
-\value{
-No return value.
+
+\item{silent}{a logical controling standard output}
 }
 \description{
 Print Birges's ratio and confidence interval.
