@@ -3,6 +3,7 @@
 #' @param x a numeric vector
 #' @param y a numeric vector of responses/data
 #' @param uy a numeric vector of uncertainties
+#' @param dataType an numeric (1 or 2) defining the type of data 
 #' @param ySmooth a numeric vector of smoothed data
 #' @param out a list, output of fitEpxGP
 #' @param modScale a real defining the plotting scale for yGP
@@ -13,7 +14,8 @@
 #' @export
 
 plotExpGP       <- function(x, y, uy, ySmooth, out,
-                            modScale=0.3, nMC=100, gPars) {
+                            modScale=0.3, nMC=100, gPars,
+                            dataType = 2) {
   # Extract graphical parameters
   for (n in names(gPars))
     assign(n,rlist::list.extract(gPars,n))
@@ -25,7 +27,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
   # lasso    = out$lasso
   
   par(mfrow=c(2-prior_PD,2),pty=pty,mar=mar,mgp=mgp,
-      tcl=tcl,lwd=lwd, cex=cex)
+      tcl=tcl,lwd=lwd,cex=cex)
   
   if(method == 'sample') {
     
@@ -57,13 +59,13 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       # Calculate AVerage Exponential Decay
       mExp = x*0
       for (i in 1:nrow(theta))
-        mExp = mExp + expDecayModel(x,theta[i,1:3])
+        mExp = mExp + expDecayModel(x,theta[i,1:3],dataType)
       mExp = mExp/nrow(theta)
       lines(x,mExp,col=cols[7])
     } else {
       if(nMC >0)
         for (i in 1:nMC)
-          lines(x,expDecayModel(x,theta[i,1:3]),col=col_tr[7])
+          lines(x,expDecayModel(x,theta[i,1:3],dataType),col=col_tr[7])
     }
     
     legend('topright', bty='n',
@@ -124,11 +126,11 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     )
     )
     segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])       # 95 %
-    segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=6) # 50 %
+    segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=2*lwd) # 50 %
     
     legend('topright', bty='n',
            legend=c('50% CI','95% CI','post. sample'),
-           pch=NA ,lty=c(1,1,1),lwd=c(6,2,2),
+           pch=NA ,lty=c(1,1,1),lwd=c(2*lwd,lwd,lwd),
            col=c(cols[6],cols[7],col_tr2[4])
     )
     box()
@@ -147,7 +149,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
          xlab='depth (a.u.)',
          ylab='mean OCT signal (a.u.)')
     grid()
-    lines(x,expDecayModel(x,theta),col=cols[7])
+    lines(x,expDecayModel(x,theta,dataType),col=cols[7])
     lines(x,mod, col=cols[4])
     
     legend('topright', bty='n',
@@ -202,10 +204,10 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       )
       )
       segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])       # 95 %
-      segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=6) # 50 %
+      segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=2*lwd) # 50 %
       legend('topright', bty='n',
              legend=c('50% CI','95% CI','post. sample'),
-             pch=NA ,lty=c(1,1,1),lwd=c(6,2,2),
+             pch=NA ,lty=c(1,1,1),lwd=c(2*lwd,lwd,lwd),
              col=c(cols[6],cols[7],col_tr2[4])
       )
       
@@ -214,7 +216,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       segments(xGP,yGP,xGP,0*yGP,col=cols[7])
       legend('topright', bty='n',
              legend=c('ctrl points','modulation'),
-             pch=c(19,NA) ,lty=c(1,1),lwd=c(-1,2),
+             pch=c(19,NA) ,lty=c(1,1),lwd=c(-1,lwd),
              col=c(cols[7],cols[4])
       )
     }

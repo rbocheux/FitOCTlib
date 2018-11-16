@@ -4,7 +4,8 @@
 \alias{plotExpGP}
 \title{Plot outputs from \code{fitExpGP}.}
 \usage{
-plotExpGP(x, y, uy, ySmooth, out, modScale = 0.3, nMC = 100, gPars)
+plotExpGP(x, y, uy, ySmooth, out, modScale = 0.3, nMC = 100, gPars,
+  dataType = 2)
 }
 \arguments{
 \item{x}{a numeric vector}
@@ -22,6 +23,8 @@ plotExpGP(x, y, uy, ySmooth, out, modScale = 0.3, nMC = 100, gPars)
 \item{nMC}{an integer number of spaghetti lines}
 
 \item{gPars}{a list of graphical parameters and colors}
+
+\item{dataType}{an numeric (1 or 2) defining the type of data}
 }
 \value{
 Produces a plot.

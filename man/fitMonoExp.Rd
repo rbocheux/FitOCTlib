@@ -4,7 +4,7 @@
 \alias{fitMonoExp}
 \title{Monoexponential fit of OCT decay}
 \usage{
-fitMonoExp(x, y, uy, method = "optim", nb_chains = 4,
+fitMonoExp(x, y, uy, method = "optim", dataType = 2, nb_chains = 4,
   nb_warmup = 500, nb_iter = nb_warmup + 500)
 }
 \arguments{
@@ -15,6 +15,8 @@ fitMonoExp(x, y, uy, method = "optim", nb_chains = 4,
 \item{uy}{a numeric vector of uncertainty on 'y'}
 
 \item{method}{choice of optimization method in c('optim','sample')}
+
+\item{dataType}{an numeric (1 or 2) defining the type of data}
 }
 \value{
 A list containing
@@ -32,7 +34,7 @@ Monoexponential fit of OCT decay
 Bayesian inference of the parameters of an exponential
 model assuming an uncorrelated normal noise
 \code{y(x) ~ normal(m(x),uy(x));
-m(x) = theta[1] + theta[2]*exp(-2*x/theta[3])}.
+m(x) = theta[1] + theta[2]*exp(-dataType*x/theta[3])}.
 }
 \author{
 Pascal PERNOT

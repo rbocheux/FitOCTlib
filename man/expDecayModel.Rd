@@ -4,12 +4,14 @@
 \alias{expDecayModel}
 \title{Reference OCT decay model.}
 \usage{
-expDecayModel(x, c)
+expDecayModel(x, c, dataType = 2)
 }
 \arguments{
 \item{x}{a numeric vector of depths}
 
 \item{c}{a numeric vector of parameters}
+
+\item{dataType}{an numeric (1 or 2) defining the type of data}
 }
 \value{
 A numeric vector of model values

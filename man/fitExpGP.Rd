@@ -4,11 +4,11 @@
 \alias{fitExpGP}
 \title{Decay fit with modulation of mean depth by Gaussian Process}
 \usage{
-fitExpGP(x, y, uy, Nn = 10, theta0 = NULL, cor_theta = NULL,
-  ru_theta = 0.1, lambda_rate = 0.1, lasso = FALSE,
-  method = "sample", iter = 50000, prior_PD = 0, alpha_scale = 0.1,
-  rho_scale = 1/Nn, gridType = "internal", nb_chains = 4,
-  nb_warmup = 500, nb_iter = 1000, verbose = FALSE,
+fitExpGP(x, y, uy, dataType = 2, Nn = 10, theta0 = NULL,
+  cor_theta = NULL, ru_theta = 0.1, lambda_rate = 0.1,
+  lasso = FALSE, method = "sample", iter = 50000, prior_PD = 0,
+  alpha_scale = 0.1, rho_scale = 1/Nn, gridType = "internal",
+  nb_chains = 4, nb_warmup = 500, nb_iter = 1000, verbose = FALSE,
   open_progress = TRUE)
 }
 \arguments{
@@ -17,6 +17,8 @@ fitExpGP(x, y, uy, Nn = 10, theta0 = NULL, cor_theta = NULL,
 \item{y}{a numeric vector of responses}
 
 \item{uy}{a numeric vector of uncertainty on 'y'}
+
+\item{dataType}{an numeric (1 or 2) defining the type of data}
 
 \item{Nn}{number of control points}
 

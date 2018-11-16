@@ -2,11 +2,11 @@
 
 functions{
   // Exp. decay model
-  vector phys_mod(real[] x, vector p) {
+  vector phys_mod(real[] x, vector p, int dataType) {
     int N = size(x);
     vector[N] m;
     for (n in 1:N)
-      m[n] = p[1] + p[2] * exp(-2*x[n]/p[3]);
+      m[n] = p[1] + p[2] * exp(- dataType*x[n] / p[3]);
     return m;
   }
 
@@ -19,13 +19,14 @@ data {
   vector<lower=0>[N] uy;
 
   // Decay model
-  int<lower=1>       Np; // Nb params in decay: should be 3 !!!
+  int<lower=1>          Np; // Nb params in decay: should be 3 !!!
+  int<lower=1, upper=2> dataType;
 }
 parameters {
   vector<lower=0>[Np] theta;   // Decay parameters
 }
 transformed parameters {
-  vector[N]     m = phys_mod(x,theta);
+  vector[N]     m = phys_mod(x,theta,dataType);
   vector[N]     resid;
 
   for (n in 1:N)

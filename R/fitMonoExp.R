@@ -4,6 +4,7 @@
 #' @param y a numeric vector of responses
 #' @param uy a numeric vector of uncertainty on 'y'
 #' @param method choice of optimization method in c('optim','sample')
+#' @param dataType an numeric (1 or 2) defining the type of data 
 #' @return A list containing
 #' \describe{
 #'   \item{best.theta}{a vector of optimal parameters}
@@ -15,17 +16,18 @@
 #' @details Bayesian inference of the parameters of an exponential
 #' model assuming an uncorrelated normal noise
 #' \code{y(x) ~ normal(m(x),uy(x));
-#' m(x) = theta[1] + theta[2]*exp(-2*x/theta[3])}.
+#' m(x) = theta[1] + theta[2]*exp(-dataType*x/theta[3])}.
 #' @export
 
-fitMonoExp <- function(x, y, uy, method = 'optim',
+fitMonoExp <- function(x, y, uy, method = 'optim', dataType = 2,
                        nb_chains = 4, nb_warmup = 500,
                        nb_iter = nb_warmup + 500) {
 
   stanData = list(
     N =length(x),
     x=x, y=y, uy=uy,
-    Np=3
+    Np=3,
+    dataType = dataType
   )
 
   init = function() {
@@ -73,7 +75,8 @@ fitMonoExp <- function(x, y, uy, method = 'optim',
     list(fit        = fit,
          best.theta = theta0,
          cor.theta  = thetaCor,
-         method     = method
+         method     = method,
+         data       = stanData
     )
   )
 }

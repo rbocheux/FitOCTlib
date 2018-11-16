@@ -3,6 +3,7 @@
 #' @param x a numeric vector
 #' @param y a numeric vector of responses
 #' @param uy a numeric vector of uncertainty on 'y'
+#' @param dataType an numeric (1 or 2) defining the type of data 
 #' @param method choice of optimization method in c('optim','sample')
 #' @param Nn number of control points
 #' @param theta0    theta prior mean vbalues
@@ -36,6 +37,7 @@
 #' @export
 
 fitExpGP <- function(x, y, uy,
+                     dataType  = 2,        # Intensity data (1 for Amplitude)
                      Nn        = 10,       # Nb of control points
                      theta0    = NULL,     # Theta prior
                      cor_theta = NULL,     # ...
@@ -72,6 +74,7 @@ fitExpGP <- function(x, y, uy,
   stanData = list(
     N =length(x),
     x=x, y=y, uy=uy,
+    dataType = dataType,
     Np = 3,
     Nn = Nn,
     xGP = xGP,
@@ -150,5 +153,6 @@ fitExpGP <- function(x, y, uy,
   }
 
   return(list(fit = fit, method = method, xGP = xGP,
-              prior_PD = prior_PD, lasso = lasso))
+              prior_PD = prior_PD, lasso = lasso,
+              data = stanData))
 }

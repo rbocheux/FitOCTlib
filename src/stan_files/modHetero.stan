@@ -2,12 +2,13 @@
 // by exponential: uy(x) ~ Normal(mean = 0, sd = a*exp(-x/b) )
 
 data {
-  int<lower=1> N; // size of vectors
-  vector[N]    x; // positions
-  vector[N]    y; // values
+  int<lower=1>  N;      // size of vectors
+  vector[N]     x;      // positions
+  vector[N]     y;      // values
+  real<lower=0> maxRate;// upper limit (ensuring homoscedasticity)
 }
 parameters {
-  vector<lower=0, upper=1e4>[2] theta; // upper limit: homoscedasticity
+  vector<lower=0, upper=maxRate>[2] theta; 
 }
 transformed parameters {
   vector[N] sig;

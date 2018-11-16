@@ -4,7 +4,7 @@
 \alias{estimateNoise}
 \title{Estimate and model noise in signal}
 \usage{
-estimateNoise(x, y, df = 15)
+estimateNoise(x, y, df = 15, maxRate = 10000)
 }
 \arguments{
 \item{x}{a numeric vector}
@@ -12,6 +12,8 @@ estimateNoise(x, y, df = 15)
 \item{y}{a numeric vector of responses}
 
 \item{df}{smoothing factor for \code{smooth.splines}}
+
+\item{maxRate}{max. value of rate parameter}
 }
 \value{
 A list containing

@@ -46,22 +46,24 @@ functions{
   // Modulated exponential decay
   vector phys_mod(real[] x, // positions
                 vector   p, // parameters
-                vector   dL // modulation vector
+                vector   dL,// modulation vector
+                int      dataType
                 ) {
     int N = size(x);
     vector[N] m;
     for (n in 1:N)
-      m[n] = p[1] + p[2] * exp(-2*x[n]/(p[3]*(1+dL[n])));
+      m[n] = p[1] + p[2] * exp(- dataType*x[n] / (p[3]*(1+dL[n])) );
     return m;
   }
 
 }
 data {
   // Calibration dataset
-  int<lower=1>        N;
-  real                x[N];
-  vector[N]           y;
-  vector<lower=0>[N]  uy;
+  int<lower=1>          N;
+  real                  x[N];
+  vector[N]             y;
+  vector<lower=0>[N]    uy;
+  int<lower=1, upper=2> dataType;
 
   // Decay model
   int<lower=1>        Np;          // Nb params in decay
@@ -107,8 +109,8 @@ transformed parameters {
   vector[N]     resid;
 
   if(prior_PD == 0) {
-    dL    = inhomo(x_scaled,yGP,xGP_scaled,alpha,rho_scale);
-    m     = phys_mod(x,theta,dL);
+    dL = inhomo(x_scaled,yGP,xGP_scaled,alpha,rho_scale);
+    m  = phys_mod(x,theta,dL,dataType);
     for (n in 1:N)
       resid[n] = (y[n] - m[n]); // Rediduals
   }
