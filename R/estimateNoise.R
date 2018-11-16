@@ -3,6 +3,7 @@
 #' @param x a numeric vector
 #' @param y a numeric vector of responses
 #' @param df smoothing factor for \code{smooth.splines}
+#' @param maxRate max. value of rate parameter
 #' @return A list containing
 #' \describe{
 #'   \item{fit}{a \code{stanfit} object containg the results of the fit}
@@ -21,7 +22,7 @@
 #' uy(x) = theta[1]*exp(-x/theta[2])} assuming a Poisson-type noise.
 #' @export
 
-estimateNoise <- function(x, y, df = 15) {
+estimateNoise <- function(x, y, df = 15, maxRate = 10000) {
 
   # Smoothing
   ySpl   = stats::smooth.spline(x,y,df=df)$y
@@ -29,7 +30,7 @@ estimateNoise <- function(x, y, df = 15) {
 
   # Fit smoothing residuals by exponential variance model
 
-  stanData = list(N =length(x), x=x, y=resSpl)
+  stanData = list(N =length(x), x=x, y=resSpl, maxRate = maxRate)
   init = list(theta = c(max(resSpl),mean(x)))
 
   # Optimize
@@ -47,5 +48,5 @@ estimateNoise <- function(x, y, df = 15) {
   sig = theta[1]*exp(-x/theta[2])
 
   return(list(fit = fit, theta = theta, uy = sig, 
-              ySmooth = ySpl, method='optim'))
+              ySmooth = ySpl, method='optim', data = stanData))
 }
