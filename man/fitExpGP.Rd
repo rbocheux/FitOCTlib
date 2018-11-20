@@ -5,10 +5,10 @@
 \title{Decay fit with modulation of mean depth by Gaussian Process}
 \usage{
 fitExpGP(x, y, uy, dataType = 2, Nn = 10, theta0 = NULL,
-  cor_theta = NULL, ru_theta = 0.1, lambda_rate = 0.1,
-  lasso = FALSE, method = "sample", iter = 50000, prior_PD = 0,
-  alpha_scale = 0.1, rho_scale = 1/Nn, gridType = "internal",
-  nb_chains = 4, nb_warmup = 500, nb_iter = 1000, verbose = FALSE,
+  Sigma0 = NULL, lambda_rate = 0.1, lasso = FALSE,
+  method = "sample", iter = 50000, prior_PD = 0, alpha_scale = 0.1,
+  rho_scale = 1/Nn, gridType = "internal", nb_chains = 4,
+  nb_warmup = 500, nb_iter = 1000, verbose = FALSE,
   open_progress = TRUE)
 }
 \arguments{
@@ -24,9 +24,7 @@ fitExpGP(x, y, uy, dataType = 2, Nn = 10, theta0 = NULL,
 
 \item{theta0}{theta prior mean vbalues}
 
-\item{cor_theta}{theta prior correlation matrix}
-
-\item{ru_theta}{theta prior uncertainty scale}
+\item{Sigma0}{theta prior corvariance matrix}
 
 \item{lambda_rate}{scale of ctrl points prior}
 

@@ -6,9 +6,8 @@
 #' @param dataType an numeric (1 or 2) defining the type of data 
 #' @param method choice of optimization method in c('optim','sample')
 #' @param Nn number of control points
-#' @param theta0    theta prior mean vbalues
-#' @param cor_theta theta prior correlation matrix
-#' @param ru_theta  theta prior uncertainty scale
+#' @param theta0 theta prior mean vbalues
+#' @param Sigma0 theta prior corvariance matrix
 #' @param lambda_rate scale of ctrl points prior
 #' @param alpha_scale SD scale of GP
 #' @param rho_scale relative correlation length of GP
@@ -40,8 +39,7 @@ fitExpGP <- function(x, y, uy,
                      dataType  = 2,        # Intensity data (1 for Amplitude)
                      Nn        = 10,       # Nb of control points
                      theta0    = NULL,     # Theta prior
-                     cor_theta = NULL,     # ...
-                     ru_theta  = 0.1,      # ...
+                     Sigma0    = NULL,     # ...
                      lambda_rate = 0.1,    # Scale of ctrl points prior
                      lasso     = FALSE,    # Use lasso prior ?
                      method    = 'sample', # One of 'sample','optim'
@@ -68,8 +66,8 @@ fitExpGP <- function(x, y, uy,
   if(is.null(theta0))
     theta0 = c(min(y),max(y)-min(y),mean(x))
 
-  if(is.null(cor_theta))
-    cor_theta = diag(1,length(theta0))
+  if(is.null(Sigma0))
+    Sigma0 = diag((theta0*0.05)^2,length(theta0)) # 5% unc., no corr.
 
   stanData = list(
     N =length(x),
@@ -81,8 +79,7 @@ fitExpGP <- function(x, y, uy,
     alpha_scale = alpha_scale,
     rho_scale   = rho_scale,
     theta0      = theta0,
-    cor_theta   = cor_theta,
-    ru_theta    = ru_theta,
+    Sigma0      = Sigma0,
     prior_PD    = prior_PD,
     lambda_rate = lambda_rate
   )

@@ -68,8 +68,7 @@ data {
   // Decay model
   int<lower=1>        Np;          // Nb params in decay
   vector<lower=0>[Np] theta0;      // Reference Decay parameters
-  corr_matrix[Np]     cor_theta;   // Prior Correlation matrix
-  real<lower=0>       ru_theta;    // Relative uncert. on theta0
+  cov_matrix[Np]      Sigma0;      // Prior Corvariance matrix
 
   // GP
   int<lower=0>        Nn;          // Nb. of control points (CP) for GP
@@ -84,10 +83,6 @@ data {
 transformed data {
   real x_scaled[N];
   real xGP_scaled[Nn];
-  cov_matrix[Np] Sigma0;
-
-  // Prior covariance matrix
-  Sigma0 = quad_form_diag(cor_theta, ru_theta*theta0);
 
   // Rescale positions for dimensionless GP
   for(n in 1:N)
