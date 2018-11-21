@@ -6,138 +6,36 @@
 #' @param priorType a string defining the type of prior
 #' @param out ourput from \code{fitMonoExp}
 #' @param ru_theta optional real defining the relative uncertainty on parameters
-#' @return A list containing the center and covariance matrix of the prior pdf.  
+#' @param eps tolerance parameter for moments matching method
+#' @param nb_chains  number of MCMC chains
+#' @param nb_warmup number of warmup steps
+#' @param nb_iter   number of steps
+#'  
+#' @return A list containing the center, covariance matrix 
+#' of the prior pdf and the constraint and realized statistics.  
+#' 
 #' @author Pascal PERNOT
+#' 
+#' @details Provides two ways to buil a prior for the exponential decay 
+#' parameters of the \code{ExpGP} model:
+#' \describe{
+#'   \item{priorType='mono'}{builds a covariance matrix from the correlation 
+#'     matrix of the \code{fitMonoExp} model and a relative uncertainty 
+#'     parameter \code{ru_theta}}
+#'   \item{priorType='abc'}{estimates the parameters uncertainties by 
+#'     a moments matching strategy, and assume no correlation}
+#' } 
+#' 
 #' @export
 
-estimateExpPrior <- function(x, uy, dataType,
-                             priorType='mono',
-                             out, ru_theta = 0.05) {
+estimateExpPrior <- function(x, uy, dataType, priorType = 'mono',
+                             out, ru_theta = 0.05, eps = 1e-3,    
+                             nb_chains = 4, nb_warmup = 800,
+                             nb_iter = nb_warmup + 200) {
+
   statsObs = function(x){
     # Stats for residuals are Q95 and 0.
     c(quantile(abs(x),probs=c(0.95)), 0.)
-  }
-  statsSim = function(x) {
-    # Stats for residuals are PU95 and sd(PU)
-    c( 1.96*sqrt(mean(x^2,na.rm=TRUE)),sd(x,na.rm=TRUE))
-  }
-  upModnoCorr    = function(p,parList) {
-    # Use Propagation of variances to Estimate Prediction uncertainty
-    # Covariances assumed to be null
-    
-    x  = parList$x
-    p1 = parList$p1
-    dt = parList$dataType
-    
-    ## Build covariance matrix from params
-    sig = c(p[1],p[2],p[3])
-    V = diag(sig^2)
-    
-    ## Linear UP
-    up=rep(NA,length(x))
-    for (j in 1:length(x)) {
-      tmp = exp(- dt*x[j] / p1[3])
-      J = c(1,
-            tmp,
-            dt*x[j]*p1[2]/p1[3]^2 * tmp)
-      up[j] = sqrt(t(J) %*% V %*% J)
-    }
-    return(up)
-  }
-  modSM = function(par,parList){
-    statsSim(
-      upModnoCorr(par,parList)/parList$uy
-    )
-  }
-  chi2SM = function (par, parList) {
-    sum(
-      (parList$Sobs-modSM(par,parList))^2
-    )
-  }
-  opt2ndPass = function(x,uy,dataType,Sobs=NA, p1=NA,
-                        lower=NULL,upper=NULL,start=NULL){
-    
-    # cl <- makeCluster(4); setDefaultCluster(cl=cl)
-    # clusterExport(cl,
-    #               c("residSM","wgt","modSM","statsSim",
-    #                 "upModnoCorr"),
-    #               envir = .GlobalEnv)
-    # clusterExport(cl,
-    #               c("x","y","Sobs","p1","weight"),
-    #               envir = environment())
-    
-    # Bounds
-    if(is.null(lower))
-      lower = c(0,0,0)
-    if(is.null(upper))
-      upper = p1
-    if(is.null(start))
-      start = 0.5*(lower+upper)
-    
-    parList = list(
-      x        = x,
-      uy       = uy,
-      dataType = dataType,
-      p1       = p1,
-      Sobs     = Sobs)
-    
-    best = rgenoud::genoud(
-      fn              = chi2SM,
-      parList         = parList,
-      starting.values = start,
-      nvars           = length(start),
-      BFGS            = TRUE,
-      BFGSburnin      = 1,
-      print.level     = 0,
-      max.generations = 30,
-      wait.generations= 5,
-      gradient.check  = FALSE,
-      pop.size        = 100,
-      Domains         = cbind(lower,upper),
-      boundary.enforcement = 2,
-      # cluster=cl,
-      hessian         = FALSE
-    )
-    
-    # setDefaultCluster(cl=NULL); stopCluster(cl)
-    
-    return(
-      list(par     = best$par,
-           hessian = best$hessian,
-           parList = parList
-      )
-    )
-  }
-  fitUqOpt = function(x,uy,dataType,theta0,resid,sigFac=0.3) {
-    
-    # Estimate uncertainty by Statistics Matching model
-    
-    ## Data statistics
-    S.obs = statsObs(resid/uy)
-    
-    ## Initial estimate
-    start = sigFac/2 * theta0
-    
-    # Optimize
-    bestu = opt2ndPass(
-      x, uy, dataType,
-      Sobs=S.obs, p1=theta0,
-      upper=2*start,start=start
-    )
-    
-    ## Posterior Prediction
-    P.map = P.mean = c(bestu$par,0,0,0)
-    
-    ## Results summary
-    S.map = modSM(bestu$par,bestu$parList)
-    
-    return(
-      list(
-        S.obs     = S.obs,
-        S.map     = S.map,
-        P.map     = P.map
-      )
-    )
   }
   
   theta0    = out$best.theta   # Used by next stage
@@ -146,23 +44,58 @@ estimateExpPrior <- function(x, uy, dataType,
     # Scale Monoexp covariance matrix by ru_theta
     cor_theta = out$cor.theta
     u_theta   = ru_theta * theta0
+    rList = NULL
     
   } else {
     # ABC nocorr approx.
-    cor_theta = diag(c(1,1,1))
-    P = fitUqOpt(
-      x, uy, dataType, theta0,
-      resid=out$fit$par$resid
+    resid = out$fit$par$resid
+    Sobs  = statsObs(resid/uy)
+    
+    stanData = list(
+      N        = length(x), 
+      x        = x, 
+      uy       = uy, 
+      dataType = dataType,
+      Sobs     = Sobs,
+      Np       = 3,
+      theta    = theta0,
+      eps      = eps
+      )
+    init = list(
+      u_theta = ru_theta * theta0
     )
-    u_theta   = P$P.map[1:3]
+    
+    # Sample
+    fit = rstan::sampling(
+      stanmodels$modUQExp,
+      data      = stanData,
+      init      = function() {init},
+      control   = list(adapt_delta=0.995),
+      iter      = nb_iter,
+      chains    = nb_chains,
+      warmup    = nb_warmup,
+      verbose   = FALSE
+    )
+    
+    lp   = rstan::extract(fit,'lp__')[[1]]
+    map  = which.max(lp)
+    u_theta   = rstan::extract(fit,'u_theta')[[1]][map,]
+    cor_theta = diag(c(1,1,1)) # Hyp. nocorr
+    rList =     list(
+      Sobs   = Sobs,
+      Ssim   = rstan::extract(fit,'Ssim')[[1]][map,]
+    )
+    
   }
   
-  Sigma0    = diag(u_theta) %*% cor_theta %*% diag(u_theta)
+  # Cov. matrix
+  Sigma0 = diag(u_theta) %*% cor_theta %*% diag(u_theta)
   
   return(
     list(
       theta0 = theta0,
-      Sigma0 = Sigma0
+      Sigma0 = Sigma0,
+      rList  = rList
     )
   )
 }

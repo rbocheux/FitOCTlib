@@ -1,17 +1,12 @@
 #  selX.R
 #' Subset OCT signal.
-
 #' @param x a numeric vector
 #' @param y a numeric vector of responses
 #' @param depthSel range of \code{x} values: \code{c(xmin,xmax)}
 #' @param subsample a numeric factor for regular subsampling
-
 #' @return Returns a list containing new vectors \code{x} and \code{y}.
-
 #' @author Pascal PERNOT
-
 #' @details The default parameters retuen the input vectors unchanged.
-
 #' @export
 
 

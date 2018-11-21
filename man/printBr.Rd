@@ -13,6 +13,15 @@ printBr(fit, prob = 0.9, silent = FALSE)
 
 \item{silent}{a logical controling standard output}
 }
+\value{
+Returns invisibly a list containing
+\describe{
+  \item{br}{the estimated value of the Birge's ratio} 
+  \item{ndf}{the estimated number of degrees of freedom} 
+  \item{CI95}{a 95\% interval for admissible values of br}
+  \item{alert}{a possible warning message, or NULL}
+}
+}
 \description{
 Print Birges's ratio and confidence interval.
 }

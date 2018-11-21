@@ -7,9 +7,9 @@
 
 #' @return Returns invisibly a list containing
 #' \describe{
-#'   \item{br   }{the estimated value of the Birge's ratio} 
-#'   \item{ndf  }{the estimated number of degrees of freedom} 
-#'   \item{CI95 }{a 95% interval for admissible values of br}
+#'   \item{br}{the estimated value of the Birge's ratio} 
+#'   \item{ndf}{the estimated number of degrees of freedom} 
+#'   \item{CI95}{a 95\% interval for admissible values of br}
 #'   \item{alert}{a possible warning message, or NULL}
 #' }
 

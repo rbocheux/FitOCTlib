@@ -5,7 +5,8 @@
 \title{Define/estimate normal multivariate prior pdf for exponential decay parameters.}
 \usage{
 estimateExpPrior(x, uy, dataType, priorType = "mono", out,
-  ru_theta = 0.05)
+  ru_theta = 0.05, eps = 0.001, nb_chains = 4, nb_warmup = 800,
+  nb_iter = nb_warmup + 200)
 }
 \arguments{
 \item{x}{a numeric vector of depths}
@@ -19,12 +20,32 @@ estimateExpPrior(x, uy, dataType, priorType = "mono", out,
 \item{out}{ourput from \code{fitMonoExp}}
 
 \item{ru_theta}{optional real defining the relative uncertainty on parameters}
+
+\item{eps}{tolerance parameter for moments matching method}
+
+\item{nb_chains}{number of MCMC chains}
+
+\item{nb_warmup}{number of warmup steps}
+
+\item{nb_iter}{number of steps}
 }
 \value{
-A list containing the center and covariance matrix of the prior pdf.
+A list containing the center, covariance matrix 
+of the prior pdf and the constraint and realized statistics.
 }
 \description{
 Define/estimate normal multivariate prior pdf for exponential decay parameters.
+}
+\details{
+Provides two ways to buil a prior for the exponential decay 
+parameters of the \code{ExpGP} model:
+\describe{
+  \item{priorType='mono'}{builds a covariance matrix from the correlation 
+    matrix of the \code{fitMonoExp} model and a relative uncertainty 
+    parameter \code{ru_theta}}
+  \item{priorType='abc'}{estimates the parameters uncertainties by 
+    a moments matching strategy, and assume no correlation}
+}
 }
 \author{
 Pascal PERNOT

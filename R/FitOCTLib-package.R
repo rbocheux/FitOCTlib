@@ -7,7 +7,6 @@
 #' @aliases FitOCTLib
 #' @useDynLib FitOCTLib, .registration = TRUE
 #' @import methods
-#' @import rlist
 #' @import Rcpp
 #' @import rstantools
 #' @importFrom rstan sampling optimizing extract
