@@ -9,7 +9,7 @@
 #' @author Pascal PERNOT
 #' @export
 
-plotNoise       <- function(x, y, uy, ySmooth, gPars) {
+plotNoise       <- function(x, y, uy, ySmooth, gPars, dataType) {
   # Extract graphical parameters
   for (n in names(gPars))
     assign(n,rlist::list.extract(gPars,n))

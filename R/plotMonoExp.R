@@ -11,7 +11,7 @@
 #' @author Pascal PERNOT
 #' @export
 
-plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars) {
+plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars, dataType) {
   # Extract graphical parameters
   for (n in names(gPars))
     assign(n,rlist::list.extract(gPars,n))
