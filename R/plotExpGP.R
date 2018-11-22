@@ -283,5 +283,4 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     # abline(a=0,b=1,lty=2)
     # grid();box()
   }
-  
 }
