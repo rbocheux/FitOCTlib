@@ -18,11 +18,14 @@ plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars) {
   
   par(mfrow=c(1,2),pty=pty,mar=mar,mgp=mgp,tcl=tcl,lwd=lwd, cex=cex)
   
+  if (dataType==1){ylabel = "mean amplitude (a.u.)"}
+  if (dataType==2){ylabel = "mean intensity (a.u.)"}
+  
   # Fit
   plot(x,y,pch=20,cex=0.5,col=cols[6],
        main='Data fit',
-       xlab='depth (a.u.)',
-       ylab='mean OCT signal (a.u.)')
+       xlab='stromal depth (µm)',
+       ylab= ylabel)
   grid()
   lines(x,mod,col=cols[7])
   legend('topright', bty='n',
@@ -31,6 +34,10 @@ plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars) {
          pch=c(20,NA),lty=c(-1,1),
          col=c(cols[6],cols[7])
   )
+  legend('topright', bty='n', legend=c('','','',as.expression(bquote("br    " == .(formatC(br,digits=3)))),
+                                       as.expression(bquote("CI95" == .(paste0(signif(CI95,2),collapse='-'))))
+                                      )
+  )
   box()
   
   # Residus
@@ -38,7 +45,7 @@ plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars) {
   res = resid
   plot(x,res,type='n',
        ylim=ylim, main='Residuals',
-       xlab='depth (a.u.)',
+       xlab='stromal depth (µm)',
        ylab='residuals (a.u.)')
   grid()
   abline(h=0)
