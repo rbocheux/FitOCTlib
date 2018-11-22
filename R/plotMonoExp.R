@@ -23,8 +23,8 @@ plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars) {
   
   # Fit
   plot(x,y,pch=20,cex=0.5,col=cols[6],
-       main='Data fit',
-       xlab='stromal depth (µm)',
+       main= plot_title,
+       xlab= xlabel,
        ylab= ylabel)
   grid()
   lines(x,mod,col=cols[7])
@@ -45,7 +45,7 @@ plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars) {
   res = resid
   plot(x,res,type='n',
        ylim=ylim, main='Residuals',
-       xlab='stromal depth (µm)',
+       xlab= xlabel,
        ylab='residuals (a.u.)')
   grid()
   abline(h=0)

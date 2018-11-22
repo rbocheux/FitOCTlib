@@ -27,8 +27,8 @@ plotNoise       <- function(x, y, uy, ySmooth, gPars) {
   
   # Smooth Fit
   plot(x,y,pch=20,cex=0.5,col=cols[6],
-       main='Data fit',
-       xlab='stromal depth (µm)',
+       main= plot_title,
+       xlab= xlabel,
        ylab= ylabel)
   grid()
   lines(x,ySmooth,col=cols[7])
@@ -47,7 +47,7 @@ plotNoise       <- function(x, y, uy, ySmooth, gPars) {
   res = resid
   plot(x,res,type='n',
        ylim=ylim, main='Residuals',
-       xlab='stromal depth (µm)',
+       xlab= xlabel,
        ylab='residuals (a.u.)')
   grid()
   abline(h=0)

@@ -56,8 +56,8 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     
     # Fit
     plot(x,y,pch=20,cex=0.5,col=cols[6],
-         main='Data fit',
-         xlab='stromal depth (µm)',
+         main= plot_title,
+         xlab= xlabel,
          ylab= ylabel)
     grid()
     if(prior_PD == 0) {
@@ -100,7 +100,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       ylim=1.2*max(abs(res))*c(-1,1)
       plot(x,res,type='n',
            ylim=ylim, main='Residuals',
-           xlab='stromal depth (µm)',
+           xlab= xlabel,
            ylab='residuals (a.u.)')
       grid(lwd=3); abline(h=0)
       polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
@@ -120,7 +120,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
            ylim = modScale * c(-1,1),
            col  = cols[4],
            main = expression('Deviation from mean '*L[s]),
-           xlab = 'stromal depth (µm)',
+           xlab = xlabel,
            ylab = 'relative deviation')
       abline(h=0)
       grid()
@@ -133,7 +133,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
            ylim = modScale*c(-1,1),
            col  = cols[4],
            main = expression('Deviation from mean '*L[s]),
-           xlab = 'stromal depth (µm)',
+           xlab = xlabel,
            ylab = 'relative deviation')
       abline(h=0)
       grid()
@@ -164,8 +164,8 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     sigma = fit$par$sigma
     
     plot(x,y,pch=20,cex=0.5,col=cols[6],
-         main='Data fit',
-         xlab='stromal depth (µm)',
+         main= plot_title,
+         xlab= xlabel,
          ylab= ylabel)
     grid()
     lines(x,expDecayModel(x,theta,dataType),col=cols[7])
@@ -183,8 +183,8 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     res = resid
     plot(x,res,type='n',
          ylim=ylim, main='Residuals',
-         xlab='stromal depth (µm)',
-         ylab='residuals (a.u.)')
+         xlab= xlabel,
+         ylab= 'residuals (a.u.)')
     grid()
     abline(h=0)
     polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
@@ -202,7 +202,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
          ylim = modScale*c(-1,1),
          col  = cols[4],
          main = expression('Deviation from mean '*L[s]),
-         xlab = 'stromal depth (µm)',
+         xlab = xlabel,
          ylab = 'relative deviation')
     grid()
     abline(h=0)
@@ -259,7 +259,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     fit_summary = fit@.MISC[["summary"]][["msd"]][1:3,1:2]
     mean <- formatC(fit_summary[1:3,1],digits=3, format="g", decimal.mark=".")
     std  <- formatC(fit_summary[1:3,2],digits=1, format="g", decimal.mark=".")
-    parametres <- data.frame(row.names=c('C~(a.u.) ',A0,'L[s]~(µm) '),mean,std)
+    parametres <- data.frame(row.names=c('C~(a.u.) ',A0,'L[s]~(Âµm) '),mean,std)
     names(parametres) <- c("mean","std")
     
     tt <- ttheme_minimal(base_size = 56, base_colour = "black", base_family = "", parse = FALSE,
