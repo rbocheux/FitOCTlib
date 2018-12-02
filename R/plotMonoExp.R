@@ -34,8 +34,8 @@ plotMonoExp     <- function(x, y, uy, ySmooth, mod, resid, gPars, dataType, br) 
          pch=c(20,NA),lty=c(-1,1),
          col=c(cols[6],cols[7])
   )
-  legend('topright', bty='n', legend=c('','','',as.expression(bquote("br    " == .(formatC(br,digits=3)))),
-                                       as.expression(bquote("CI95" == .(paste0(signif(CI95,2),collapse='-'))))
+  legend('topright', bty='n', legend=c('','','',as.expression(bquote("br    " == .(formatC(br$br,digits=3)))),
+                                       as.expression(bquote("CI95" == .(paste0(signif(br$CI95,2),collapse='-'))))
                                       )
   )
   box()
