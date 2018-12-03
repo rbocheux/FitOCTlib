@@ -14,7 +14,7 @@
 #' @export
 
 plotExpGP       <- function(x, y, uy, ySmooth, out,
-                            nMC=100, gPars, dataType = 2) {
+                            modScale=1, nMC=100, gPars, dataType = 2) {
   # Extract graphical parameters
   for (n in names(gPars))
     assign(n,rlist::list.extract(gPars,n))
